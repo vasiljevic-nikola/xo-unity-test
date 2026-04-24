@@ -108,8 +108,6 @@ public class GameManager : MonoBehaviour
 
     public void RestartGame()
     {
-        Debug.Log("RESTART BUTTON CLICKED");
-
         ResetBoardData();
 
         foreach (CellScript cell in cells)
