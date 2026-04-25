@@ -33,6 +33,8 @@ public class GameManager : MonoBehaviour
     private int player1Moves = 0;
     private int player2Moves = 0;
 
+    private bool resultAlreadySaved = false;
+
     private void Awake()
     {
         Instance = this;
@@ -130,6 +132,7 @@ public class GameManager : MonoBehaviour
         isGameOver = true;
 
         ShowWinningLine();
+        SaveResultToStats(message);
 
         if (resultText != null)
         {
@@ -139,6 +142,35 @@ public class GameManager : MonoBehaviour
         if (gameOverPopup != null)
         {
             gameOverPopup.SetActive(true);
+        }
+    }
+
+    private void SaveResultToStats(string message)
+    {
+        if (resultAlreadySaved)
+        {
+            return;
+        }
+
+        resultAlreadySaved = true;
+
+        if (StatsManager.Instance == null)
+        {
+            Debug.LogWarning("StatsManager is missing. Game result was not saved.");
+            return;
+        }
+
+        if (message == "PLAYER 1 WINS")
+        {
+            StatsManager.Instance.RegisterGameResult("P1", matchDuration);
+        }
+        else if (message == "PLAYER 2 WINS")
+        {
+            StatsManager.Instance.RegisterGameResult("P2", matchDuration);
+        }
+        else if (message == "DRAW")
+        {
+            StatsManager.Instance.RegisterGameResult("DRAW", matchDuration);
         }
     }
 
@@ -250,6 +282,7 @@ public class GameManager : MonoBehaviour
         matchDuration = 0f;
         player1Moves = 0;
         player2Moves = 0;
+        resultAlreadySaved = false;
 
         for (int i = 0; i < board.Length; i++)
         {
