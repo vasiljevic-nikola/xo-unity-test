@@ -3575,6 +3575,9 @@ MonoBehaviour:
   - 
   gameOverPopup: {fileID: 2044556996}
   resultText: {fileID: 275169704}
+  timerText: {fileID: 100995580}
+  player1MovesText: {fileID: 1102836444}
+  player2MovesText: {fileID: 1953026298}
   cells:
   - {fileID: 266886992}
   - {fileID: 339641362}
@@ -3585,6 +3588,7 @@ MonoBehaviour:
   - {fileID: 1811794826}
   - {fileID: 1722367188}
   - {fileID: 1281839180}
+  gameBoardRect: {fileID: 594979792}
   winningLine: {fileID: 1721102627}
 --- !u!4 &1402822804
 Transform:

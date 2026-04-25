@@ -15,13 +15,23 @@ public class GameManager : MonoBehaviour
     public GameObject gameOverPopup;
     public TextMeshProUGUI resultText;
 
+    [Header("HUD UI")]
+    public TextMeshProUGUI timerText;
+    public TextMeshProUGUI player1MovesText;
+    public TextMeshProUGUI player2MovesText;
+
     [Header("Cells")]
     public CellScript[] cells;
 
     [Header("Winning Line")]
+    public RectTransform gameBoardRect;
     public RectTransform winningLine;
 
     private int winningPatternIndex = -1;
+
+    private float matchDuration = 0f;
+    private int player1Moves = 0;
+    private int player2Moves = 0;
 
     private void Awake()
     {
@@ -30,7 +40,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        ResetBoardData();
+        ResetGameState();
 
         if (gameOverPopup != null)
         {
@@ -43,6 +53,29 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        if (!isGameOver)
+        {
+            matchDuration += Time.deltaTime;
+            UpdateTimerUI();
+        }
+    }
+
+    public void RegisterMoveForCurrentPlayer()
+    {
+        if (isPlayerOneTurn)
+        {
+            player1Moves++;
+        }
+        else
+        {
+            player2Moves++;
+        }
+
+        UpdateMoveCounterUI();
+    }
+
     public void SwitchTurn()
     {
         isPlayerOneTurn = !isPlayerOneTurn;
@@ -52,14 +85,14 @@ public class GameManager : MonoBehaviour
     {
         int[,] winPatterns = new int[,]
         {
-            {0, 1, 2}, // Top row
-            {3, 4, 5}, // Middle row
-            {6, 7, 8}, // Bottom row
-            {0, 3, 6}, // Left column
-            {1, 4, 7}, // Middle column
-            {2, 5, 8}, // Right column
-            {0, 4, 8}, // Diagonal top-left to bottom-right
-            {2, 4, 6}  // Diagonal top-right to bottom-left
+            {0, 1, 2},
+            {3, 4, 5},
+            {6, 7, 8},
+            {0, 3, 6},
+            {1, 4, 7},
+            {2, 5, 8},
+            {0, 4, 8},
+            {2, 4, 6}
         };
 
         for (int i = 0; i < 8; i++)
@@ -100,7 +133,7 @@ public class GameManager : MonoBehaviour
 
         if (resultText != null)
         {
-            resultText.text = message;
+            resultText.text = message + "\nDuration: " + FormatTime(matchDuration);
         }
 
         if (gameOverPopup != null)
@@ -111,98 +144,125 @@ public class GameManager : MonoBehaviour
 
     private void ShowWinningLine()
     {
-        if (winningLine == null || winningPatternIndex == -1)
+        if (winningLine == null || gameBoardRect == null || winningPatternIndex == -1)
         {
             return;
         }
 
         winningLine.gameObject.SetActive(true);
 
-        // These values match the current 3x3 board layout:
-        // Cell Size = 180, Spacing = 10, total visible line length around 560.
-        float offset = 190f;
-        float straightLineLength = 560f;
-        float diagonalLineLength = 790f;
+        float offset = 140f;
+        float straightLineLength = 412f;
+        float diagonalLineLength = 585f;
 
-        Vector2 linePosition = Vector2.zero;
+        Vector2 boardCenter = gameBoardRect.anchoredPosition;
+        Vector2 localOffset = Vector2.zero;
+
         float rotationZ = 0f;
         float lineWidth = straightLineLength;
 
         switch (winningPatternIndex)
         {
-            // Rows
             case 0:
-                linePosition = new Vector2(0f, offset);
+                localOffset = new Vector2(0f, offset);
                 rotationZ = 0f;
-                lineWidth = straightLineLength;
                 break;
 
             case 1:
-                linePosition = new Vector2(0f, 0f);
+                localOffset = Vector2.zero;
                 rotationZ = 0f;
-                lineWidth = straightLineLength;
                 break;
 
             case 2:
-                linePosition = new Vector2(0f, -offset);
+                localOffset = new Vector2(0f, -offset);
                 rotationZ = 0f;
-                lineWidth = straightLineLength;
                 break;
 
-            // Columns
             case 3:
-                linePosition = new Vector2(-offset, 0f);
+                localOffset = new Vector2(-offset, 0f);
                 rotationZ = 90f;
-                lineWidth = straightLineLength;
                 break;
 
             case 4:
-                linePosition = new Vector2(0f, 0f);
+                localOffset = Vector2.zero;
                 rotationZ = 90f;
-                lineWidth = straightLineLength;
                 break;
 
             case 5:
-                linePosition = new Vector2(offset, 0f);
+                localOffset = new Vector2(offset, 0f);
                 rotationZ = 90f;
-                lineWidth = straightLineLength;
                 break;
 
-            // Diagonal top-left to bottom-right
             case 6:
-                linePosition = Vector2.zero;
+                localOffset = Vector2.zero;
                 rotationZ = -45f;
                 lineWidth = diagonalLineLength;
                 break;
 
-            // Diagonal top-right to bottom-left
             case 7:
-                linePosition = Vector2.zero;
+                localOffset = Vector2.zero;
                 rotationZ = 45f;
                 lineWidth = diagonalLineLength;
                 break;
         }
 
-        winningLine.anchoredPosition = linePosition;
+        winningLine.anchoredPosition = boardCenter + localOffset;
         winningLine.localRotation = Quaternion.Euler(0f, 0f, rotationZ);
         winningLine.sizeDelta = new Vector2(lineWidth, winningLine.sizeDelta.y);
     }
 
-    public void ResetBoardData()
+    private void UpdateTimerUI()
+    {
+        if (timerText != null)
+        {
+            timerText.text = "Time: " + FormatTime(matchDuration);
+        }
+    }
+
+    private void UpdateMoveCounterUI()
+    {
+        if (player1MovesText != null)
+        {
+            player1MovesText.text = "P1 Moves: " + player1Moves;
+        }
+
+        if (player2MovesText != null)
+        {
+            player2MovesText.text = "P2 Moves: " + player2Moves;
+        }
+    }
+
+    private string FormatTime(float time)
+    {
+        int totalSeconds = Mathf.FloorToInt(time);
+        int minutes = totalSeconds / 60;
+        int seconds = totalSeconds % 60;
+
+        return minutes.ToString("00") + ":" + seconds.ToString("00");
+    }
+
+    private void ResetGameState()
     {
         isPlayerOneTurn = true;
         isGameOver = false;
         winningPatternIndex = -1;
 
+        matchDuration = 0f;
+        player1Moves = 0;
+        player2Moves = 0;
+
         for (int i = 0; i < board.Length; i++)
         {
             board[i] = "";
         }
+
+        UpdateTimerUI();
+        UpdateMoveCounterUI();
     }
 
     public void RestartGame()
     {
-        ResetBoardData();
+        ResetGameState();
 
         foreach (CellScript cell in cells)
         {

@@ -25,6 +25,8 @@ public class CellScript : MonoBehaviour
 
         isFilled = true;
 
+        GameManager.Instance.RegisterMoveForCurrentPlayer();
+
         if (GameManager.Instance.CheckWin())
         {
             if (GameManager.Instance.isPlayerOneTurn)
