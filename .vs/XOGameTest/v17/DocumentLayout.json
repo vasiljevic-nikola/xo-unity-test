@@ -3,11 +3,11 @@
   "WorkspaceRootPath": "C:\\Users\\PC\\Desktop\\XO\\XOGameTest\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{177CFD06-F2B3-98BA-B875-34C0EEB6DE8D}|Assembly-CSharp.csproj|C:\\Users\\PC\\Desktop\\XO\\XOGameTest\\assets\\scripts\\gamemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{177CFD06-F2B3-98BA-B875-34C0EEB6DE8D}|Assembly-CSharp.csproj|c:\\users\\pc\\desktop\\xo\\xogametest\\assets\\scripts\\gamemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{177CFD06-F2B3-98BA-B875-34C0EEB6DE8D}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\gamemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{177CFD06-F2B3-98BA-B875-34C0EEB6DE8D}|Assembly-CSharp.csproj|c:\\users\\pc\\desktop\\xo\\xogametest\\assets\\scripts\\cellscript.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{177CFD06-F2B3-98BA-B875-34C0EEB6DE8D}|Assembly-CSharp.csproj|C:\\Users\\PC\\Desktop\\XO\\XOGameTest\\assets\\scripts\\cellscript.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{177CFD06-F2B3-98BA-B875-34C0EEB6DE8D}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\cellscript.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -32,7 +32,7 @@
               "RelativeDocumentMoniker": "Assets\\Scripts\\GameManager.cs",
               "ToolTip": "C:\\Users\\PC\\Desktop\\XO\\XOGameTest\\Assets\\Scripts\\GameManager.cs",
               "RelativeToolTip": "Assets\\Scripts\\GameManager.cs",
-              "ViewState": "AgIAAGwAAAAAAAAAAAA7wH4AAAAFAAAAAAAAAA==",
+              "ViewState": "AgIAANMAAAAAAAAAAAAowNcAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-23T11:29:50.6Z",
               "EditorCaption": ""
@@ -45,7 +45,7 @@
               "RelativeDocumentMoniker": "Assets\\Scripts\\CellScript.cs",
               "ToolTip": "C:\\Users\\PC\\Desktop\\XO\\XOGameTest\\Assets\\Scripts\\CellScript.cs",
               "RelativeToolTip": "Assets\\Scripts\\CellScript.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAADkAAAABAAAAAAAAAA==",
+              "ViewState": "AgIAACcAAAAAAAAAAAAowDkAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-23T11:18:14.704Z",
               "EditorCaption": ""
