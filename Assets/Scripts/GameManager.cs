@@ -132,6 +132,15 @@ public class GameManager : MonoBehaviour
         isGameOver = true;
 
         ShowWinningLine();
+
+        if (message == "PLAYER 1 WINS" || message == "PLAYER 2 WINS")
+        {
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlayWin();
+            }
+        }
+
         SaveResultToStats(message);
 
         if (resultText != null)
@@ -295,6 +304,11 @@ public class GameManager : MonoBehaviour
 
     public void RestartGame()
     {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayClick();
+        }
+
         ResetGameState();
 
         foreach (CellScript cell in cells)
@@ -318,6 +332,11 @@ public class GameManager : MonoBehaviour
 
     public void BackToMenu()
     {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayClick();
+        }
+
         SceneManager.LoadScene("PlayScene");
     }
 }

@@ -10,7 +10,15 @@ public class CellScript : MonoBehaviour
 
     public void OnCellClicked()
     {
-        if (isFilled || GameManager.Instance.isGameOver) return;
+        if (isFilled || GameManager.Instance.isGameOver)
+        {
+            return;
+        }
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayPop();
+        }
 
         if (GameManager.Instance.isPlayerOneTurn)
         {
