@@ -55,6 +55,11 @@ public class SettingsManager : MonoBehaviour
         LoadSettings();
         ApplyToggleValues();
 
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayClick();
+        }
+
         if (settingsPopup != null)
         {
             settingsPopup.SetActive(true);
@@ -63,6 +68,11 @@ public class SettingsManager : MonoBehaviour
 
     public void CloseSettings()
     {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayClick();
+        }
+
         if (settingsPopup != null)
         {
             settingsPopup.SetActive(false);
@@ -72,8 +82,14 @@ public class SettingsManager : MonoBehaviour
     public void SetBgmEnabled(bool isEnabled)
     {
         IsBgmEnabled = isEnabled;
+
         PlayerPrefs.SetInt(BgmKey, isEnabled ? 1 : 0);
         PlayerPrefs.Save();
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.ApplyBgmSetting();
+        }
 
         Debug.Log("BGM saved: " + isEnabled);
     }
@@ -81,6 +97,7 @@ public class SettingsManager : MonoBehaviour
     public void SetSfxEnabled(bool isEnabled)
     {
         IsSfxEnabled = isEnabled;
+
         PlayerPrefs.SetInt(SfxKey, isEnabled ? 1 : 0);
         PlayerPrefs.Save();
 
