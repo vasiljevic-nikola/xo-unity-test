@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
@@ -27,6 +28,11 @@ public class GameManager : MonoBehaviour
     public RectTransform gameBoardRect;
     public RectTransform winningLine;
 
+    [Header("Winning Line Animation")]
+    public float winningLineDrawDuration = 0.45f;
+    public float popupDelayAfterLine = 0.6f;
+    public float drawPopupDelay = 0.4f;
+
     private int winningPatternIndex = -1;
 
     private float matchDuration = 0f;
@@ -49,10 +55,7 @@ public class GameManager : MonoBehaviour
             gameOverPopup.SetActive(false);
         }
 
-        if (winningLine != null)
-        {
-            winningLine.gameObject.SetActive(false);
-        }
+        HideWinningLine();
     }
 
     private void Update()
@@ -129,20 +132,142 @@ public class GameManager : MonoBehaviour
 
     public void ShowGameOver(string message)
     {
-        isGameOver = true;
-
-        ShowWinningLine();
-
-        if (message == "PLAYER 1 WINS" || message == "PLAYER 2 WINS")
+        if (isGameOver)
         {
-            if (AudioManager.Instance != null)
-            {
-                AudioManager.Instance.PlayWin();
-            }
+            return;
         }
+
+        isGameOver = true;
 
         SaveResultToStats(message);
 
+        bool isWin = message == "PLAYER 1 WINS" || message == "PLAYER 2 WINS";
+
+        if (isWin)
+        {
+            StartCoroutine(ShowWinSequence(message));
+        }
+        else
+        {
+            StartCoroutine(ShowDrawSequence(message));
+        }
+    }
+
+    private IEnumerator ShowWinSequence(string message)
+    {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayWin();
+        }
+
+        yield return StartCoroutine(AnimateWinningLine());
+
+        yield return new WaitForSeconds(popupDelayAfterLine);
+
+        ShowGameOverPopup(message);
+    }
+
+    private IEnumerator ShowDrawSequence(string message)
+    {
+        yield return new WaitForSeconds(drawPopupDelay);
+
+        ShowGameOverPopup(message);
+    }
+
+    private IEnumerator AnimateWinningLine()
+    {
+        if (winningLine == null || gameBoardRect == null || winningPatternIndex == -1)
+        {
+            yield break;
+        }
+
+        float offset = 140f;
+        float straightLineLength = 412f;
+        float diagonalLineLength = 585f;
+
+        Vector2 boardCenter = gameBoardRect.anchoredPosition;
+
+        Vector2 startPosition = boardCenter;
+        float rotationZ = 0f;
+        float targetWidth = straightLineLength;
+
+        switch (winningPatternIndex)
+        {
+            case 0: // Top row
+                startPosition = boardCenter + new Vector2(-straightLineLength / 2f, offset);
+                rotationZ = 0f;
+                targetWidth = straightLineLength;
+                break;
+
+            case 1: // Middle row
+                startPosition = boardCenter + new Vector2(-straightLineLength / 2f, 0f);
+                rotationZ = 0f;
+                targetWidth = straightLineLength;
+                break;
+
+            case 2: // Bottom row
+                startPosition = boardCenter + new Vector2(-straightLineLength / 2f, -offset);
+                rotationZ = 0f;
+                targetWidth = straightLineLength;
+                break;
+
+            case 3: // Left column
+                startPosition = boardCenter + new Vector2(-offset, -straightLineLength / 2f);
+                rotationZ = 90f;
+                targetWidth = straightLineLength;
+                break;
+
+            case 4: // Middle column
+                startPosition = boardCenter + new Vector2(0f, -straightLineLength / 2f);
+                rotationZ = 90f;
+                targetWidth = straightLineLength;
+                break;
+
+            case 5: // Right column
+                startPosition = boardCenter + new Vector2(offset, -straightLineLength / 2f);
+                rotationZ = 90f;
+                targetWidth = straightLineLength;
+                break;
+
+            case 6: // Diagonal top-left to bottom-right
+                startPosition = boardCenter + new Vector2(-diagonalLineLength * 0.5f * 0.7071f, diagonalLineLength * 0.5f * 0.7071f);
+                rotationZ = -45f;
+                targetWidth = diagonalLineLength;
+                break;
+
+            case 7: // Diagonal bottom-left to top-right
+                startPosition = boardCenter + new Vector2(-diagonalLineLength * 0.5f * 0.7071f, -diagonalLineLength * 0.5f * 0.7071f);
+                rotationZ = 45f;
+                targetWidth = diagonalLineLength;
+                break;
+        }
+
+        winningLine.gameObject.SetActive(true);
+
+        winningLine.pivot = new Vector2(0f, 0.5f);
+        winningLine.anchoredPosition = startPosition;
+        winningLine.localRotation = Quaternion.Euler(0f, 0f, rotationZ);
+        winningLine.sizeDelta = new Vector2(0f, winningLine.sizeDelta.y);
+
+        float elapsedTime = 0f;
+
+        while (elapsedTime < winningLineDrawDuration)
+        {
+            elapsedTime += Time.deltaTime;
+
+            float progress = Mathf.Clamp01(elapsedTime / winningLineDrawDuration);
+            float smoothProgress = Mathf.SmoothStep(0f, 1f, progress);
+
+            winningLine.sizeDelta = new Vector2(targetWidth * smoothProgress, winningLine.sizeDelta.y);
+
+            yield return null;
+        }
+
+        winningLine.sizeDelta = new Vector2(targetWidth, winningLine.sizeDelta.y);
+    }
+
+    private void ShowGameOverPopup(string message)
+    {
         if (resultText != null)
         {
             resultText.text = message + "\nDuration: " + FormatTime(matchDuration);
@@ -183,73 +308,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void ShowWinningLine()
+    private void HideWinningLine()
     {
-        if (winningLine == null || gameBoardRect == null || winningPatternIndex == -1)
+        if (winningLine != null)
         {
-            return;
+            winningLine.gameObject.SetActive(false);
+            winningLine.sizeDelta = new Vector2(0f, winningLine.sizeDelta.y);
         }
-
-        winningLine.gameObject.SetActive(true);
-
-        float offset = 140f;
-        float straightLineLength = 412f;
-        float diagonalLineLength = 585f;
-
-        Vector2 boardCenter = gameBoardRect.anchoredPosition;
-        Vector2 localOffset = Vector2.zero;
-
-        float rotationZ = 0f;
-        float lineWidth = straightLineLength;
-
-        switch (winningPatternIndex)
-        {
-            case 0:
-                localOffset = new Vector2(0f, offset);
-                rotationZ = 0f;
-                break;
-
-            case 1:
-                localOffset = Vector2.zero;
-                rotationZ = 0f;
-                break;
-
-            case 2:
-                localOffset = new Vector2(0f, -offset);
-                rotationZ = 0f;
-                break;
-
-            case 3:
-                localOffset = new Vector2(-offset, 0f);
-                rotationZ = 90f;
-                break;
-
-            case 4:
-                localOffset = Vector2.zero;
-                rotationZ = 90f;
-                break;
-
-            case 5:
-                localOffset = new Vector2(offset, 0f);
-                rotationZ = 90f;
-                break;
-
-            case 6:
-                localOffset = Vector2.zero;
-                rotationZ = -45f;
-                lineWidth = diagonalLineLength;
-                break;
-
-            case 7:
-                localOffset = Vector2.zero;
-                rotationZ = 45f;
-                lineWidth = diagonalLineLength;
-                break;
-        }
-
-        winningLine.anchoredPosition = boardCenter + localOffset;
-        winningLine.localRotation = Quaternion.Euler(0f, 0f, rotationZ);
-        winningLine.sizeDelta = new Vector2(lineWidth, winningLine.sizeDelta.y);
     }
 
     private void UpdateTimerUI()
@@ -284,6 +349,8 @@ public class GameManager : MonoBehaviour
 
     private void ResetGameState()
     {
+        StopAllCoroutines();
+
         isPlayerOneTurn = true;
         isGameOver = false;
         winningPatternIndex = -1;
@@ -319,10 +386,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        if (winningLine != null)
-        {
-            winningLine.gameObject.SetActive(false);
-        }
+        HideWinningLine();
 
         if (gameOverPopup != null)
         {
