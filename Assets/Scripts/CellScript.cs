@@ -3,10 +3,10 @@ using TMPro;
 
 public class CellScript : MonoBehaviour
 {
-    public TextMeshProUGUI cellText; // Reference to the text inside the cell
-    public int cellIndex; // Index of this cell in the board array
+    public TextMeshProUGUI cellText;
+    public int cellIndex;
 
-    private bool isFilled = false; // Prevent overwriting
+    private bool isFilled = false;
 
     public void OnCellClicked()
     {
@@ -23,11 +23,13 @@ public class CellScript : MonoBehaviour
         if (GameManager.Instance.isPlayerOneTurn)
         {
             cellText.text = "X";
+            cellText.color = GameThemeApplier.XColor;
             GameManager.Instance.board[cellIndex] = "X";
         }
         else
         {
             cellText.text = "O";
+            cellText.color = GameThemeApplier.OColor;
             GameManager.Instance.board[cellIndex] = "O";
         }
 
